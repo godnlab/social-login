@@ -1,5 +1,6 @@
 package com.horudu.social.config;
 
+import com.horudu.social.config.oauth2.client.CustomOAuth2ClientProperties;
 import com.horudu.social.config.oauth2.client.CustomOAuth2Provider;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
 import org.springframework.context.annotation.Bean;
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
 public class SocialConfig {
 
     @Bean
-    public ClientRegistrationRepository clientRegistrationRepository(OAuth2ClientProperties oAuth2ClientProperties) {
+    public ClientRegistrationRepository clientRegistrationRepository(OAuth2ClientProperties oAuth2ClientProperties, CustomOAuth2ClientProperties customOAuth2ClientProperties) {
 
         List<ClientRegistration> registrations = oAuth2ClientProperties
                 .getRegistration().keySet().stream()
@@ -25,12 +26,14 @@ public class SocialConfig {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
-        // TODO: social.yml에서 정보 읽어오기
-        registrations.add(CustomOAuth2Provider.KAKAO.getBuilder("kakao")
-                .clientId("")
-                .clientSecret("")
-                .scope("profile", "account_email")
-                .build());
+        List<ClientRegistration> customRegistrations = customOAuth2ClientProperties
+                .getRegistration().keySet().stream()
+                .map(client -> getCustomRegistration(customOAuth2ClientProperties, client))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        registrations.stream()
+                .forEachOrdered(customRegistrations::add);
 
         return new InMemoryClientRegistrationRepository(registrations);
     }
@@ -44,6 +47,21 @@ public class SocialConfig {
                     .clientId(registration.getClientId())
                     .clientSecret(registration.getClientSecret())
                     .scope("email", "profile")
+                    .build();
+        }
+
+        return null;
+    }
+
+    private ClientRegistration getCustomRegistration(CustomOAuth2ClientProperties oAuth2ClientProperties, String client) {
+
+        OAuth2ClientProperties.Registration registration = oAuth2ClientProperties.getRegistration().get(client);
+
+        if (client.equals("kakao")) {
+            return CustomOAuth2Provider.KAKAO.getBuilder(client)
+                    .clientId(registration.getClientId())
+                    .clientSecret(registration.getClientSecret())
+                    .scope("profile", "account_email")
                     .build();
         }
 
