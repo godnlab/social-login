@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>HORUDU</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body>
+<h1>로그인</h1>
+<a href="javascript:" class="social" data-social="google">구글 로그인</a>
+<a href="javascript:" class="social" data-social="kakao">카카오 로그인</a>
+
+<script>
+    var socials = document.getElementsByClassName("social");
+    for (var i = 0; i < socials.length; i++) {
+        socials[i].addEventListener('click', function() {
+            var socialType = this.getAttribute('data-social');
+            location.href = '/oauth2/authorization/' + socialType;
+        }, false);
+    }
+</script>
+</body>
+</html>
