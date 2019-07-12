@@ -14,3 +14,6 @@ social:
         kakao:
           client-id: 230b5dd053d0ef1b234cb97fb27d0591
           client-secret: pgyUj8NHcKAaqJagAL8i46fIoqEbci2s
+        naver:
+          client-id: 123
+          client-secret: 456
