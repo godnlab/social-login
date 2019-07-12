@@ -32,4 +32,4 @@ out/
 .vscode/
 
 ### 인증정보 ###
-/src/resources/social.yml
+/src/main/resources/social.yml
